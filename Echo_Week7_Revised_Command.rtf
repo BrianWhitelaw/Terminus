@@ -1,0 +1,622 @@
+{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset0 Courier New;}}
+{\*\generator Riched20 10.0.14393}\viewkind4\uc1 
+\pard\f0\fs22\lang1033 --Team E (J Stroup, B Swart, J Urrabazo, T Wessels, B Whitelaw, C Zinn)\par
+--CIS336 Week 5/Task 2\par
+--DeVry University\par
+--Professor Rolando Rueda-De-Leon\par
+--09 August 2015\par
+\par
+\par
+SET ECHO ON\par
+SET LINESIZE 200;\par
+SET PAGESIZE 50;\par
+set underline~\par
+\par
+\par
+\par
+DROP TABLE Employee CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE Customer CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE Billing CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE Package CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE CustomerPackage CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE Supplier CASCADE CONSTRAINTS PURGE; \par
+DROP TABLE Rating CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE ChannelType CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE Channel CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE ChannelPackage CASCADE CONSTRAINTS PURGE;\par
+DROP TABLE CustomerSurvey CASCADE CONSTRAINTS PURGE; \par
+DROP TABLE Program CASCADE CONSTRAINTS PURGE; \par
+DROP TABLE ProgramChannel CASCADE CONSTRAINTS PURGE;\par
+\par
+\par
+--Step 1\par
+--CREATE TABLES\par
+\par
+--Create Employee Table\par
+CREATE TABLE Employee\par
+(\par
+EmployeeID\tab Number(7), CONSTRAINT Employee_EmployeeID_PK PRIMARY KEY (EmployeeID),\par
+FirstName\tab VarChar2(25) NOT NULL,\par
+LastName\tab VarChar2(25) NOT NULL,\par
+StreetAddress\tab VarChar2(30) NOT NULL,\par
+City\tab\tab VarChar2(15),\par
+State\tab\tab VarChar2(2), \par
+Zip\tab\tab Number(10) NOT NULL\par
+);\par
+\par
+--Create Customer Table\par
+CREATE TABLE Customer\par
+(\par
+CustomerID\tab Number(7) CONSTRAINT pk_customerID PRIMARY KEY NOT NULL,\par
+FirstName\tab VarChar2(13) NOT NULL, \par
+LastName\tab VarChar2(17) NOT NULL, \par
+Phone\tab\tab Number (15), \par
+StreetAddress\tab VarChar2(29) NOT NULL, \par
+City\tab\tab VarChar2(25) NOT NULL, \par
+State\tab\tab VarChar2(2) NOT NULL, \par
+Zip\tab\tab Number(5) NOT NULL, \par
+Email\tab\tab VarChar2(29), \par
+StartDate\tab Date NOT NULL, \par
+BillingCycle\tab Date NOT NULL, \par
+Status\tab\tab VarChar2(9) NOT NULL,\par
+StatusDate\tab Date, \par
+StatusReason\tab VarChar2(11), \par
+EmployeeID\tab Number(7) CONSTRAINT cust_empid_fk REFERENCES Employee\par
+);\par
+\par
+--Create Billing Table\par
+CREATE TABLE Billing\par
+(\par
+BillingID\tab NUMBER(7) constraint PK_BillingID primary key NOT NULL,\par
+CustomerID\tab NUMBER(7) NOT NULL CONSTRAINT bil_cusid_fk REFERENCES Customer,\par
+BillingDate\tab DATE NOT NULL,\par
+DueDate\tab\tab DATE NOT NULL,\par
+DueAmt\tab\tab NUMBER(10) NOT NULL,\par
+PaidDate\tab DATE,\par
+PaidAmt\tab\tab NUMBER(10)\par
+);\par
+\par
+--Create Package Table\par
+CREATE TABLE Package\par
+(\par
+PackageId\tab number(7) not null constraint pckgId_Pk Primary Key,\par
+PackageName\tab varchar2(25) not null,\par
+PackagePrice\tab number(6,2) not null\par
+);\par
+\par
+\par
+--Create CustomerPackage Table\par
+CREATE TABLE CustomerPackage\par
+(\par
+PackageID\tab Number(7) NOT NULL CONSTRAINTS CustomerPackage_PackageID_fK REFERENCES Package,\par
+CustomerID\tab Number(7) NOT NULL CONSTRAINTS Cuspack_cusid_fk REFERENCES Customer,\par
+SubscribeDate\tab DATE,\par
+CONSTRAINTS cuspack_packidcusid_pk PRIMARY KEY (PackageID, CustomerID)\par
+);\par
+\par
+\par
+--Create Supplier Table\par
+CREATE TABLE Supplier\par
+(\par
+SupplierID\tab NUMBER (5) constraint pk_SupplierID primary key NOT NULL,\par
+SupplierName\tab VARCHAR2(12),\par
+ContactName\tab VARCHAR2(15),\par
+StreetAddress\tab VARCHAR2(25),\par
+City\tab\tab VARCHAR2(11),\par
+State\tab\tab VARCHAR(2),\par
+Zip\tab\tab NUMBER(5),\par
+Phone\tab\tab NUMBER(20)\par
+);\par
+\par
+--CREATE Rating Table\par
+CREATE TABLE Rating\par
+(\par
+RatingID\tab Number(5) CONSTRAINT rat_ratid_pk PRIMARY KEY NOT NULL,\par
+RatingCode\tab VARCHAR2(5) NOT NULL,\par
+RatingDesc\tab VARCHAR2(175) NOT NULL\par
+);\par
+\par
+--CREATE ChannelType Table\par
+CREATE TABLE ChannelType\par
+(\par
+ChannelTypeID\tab NUMBER(7) constraint PK_ChannelTypeID primary key NOT NUll,\par
+ChannelType\tab VARCHAR2(12) NOT NULL\par
+);\par
+\par
+\par
+--CREATE Channel Table\par
+CREATE TABLE Channel\par
+(\par
+ChannelID\tab NUMBER (7) constraint PK_ChannelID primary key NOT NULL,\par
+ChannelName\tab VARCHAR2(20) NOT NULL,\par
+ChannelNumber\tab NUMBER(4) NOT NULL,\par
+ChannelTypeID\tab NUMBER(7) NOT NULL CONSTRAINT fk_ChanneltypeID REFERENCES ChannelType\par
+);\par
+\par
+\par
+--CREATE ChannelPackage Table \par
+CREATE TABLE ChannelPackage\par
+(\par
+ChannelID\tab Number(7) NOT NULL CONSTRAINT chanpack_chanid_fk REFERENCES Channel,\par
+PackageID\tab Number(7) NOT NULL CONSTRAINT chanpack_pacid_fk REFERENCES Package,\par
+CONSTRAINTS chanpack_chanID_packID_pk PRIMARY KEY (ChannelID,PackageID)\par
+);\par
+\par
+\par
+--CREATE CustomerSurvey Table \par
+CREATE TABLE CustomerSurvey\par
+(\par
+SurveyID\tab Number(7) constraint pk_SurveyID primary key NOT NULL,\par
+CustomerID\tab Number(5) NOT NULL CONSTRAINT custsur_cusid_fk REFERENCES Customer, \par
+SurveyDate\tab Date NOT NULL,\par
+ChannelID\tab NUMBER(4) NOT NULL CONSTRAINT custsur_chanid_fk REFERENCES Channel \par
+);\par
+\par
+\par
+--Create Program Table\par
+CREATE TABLE Program\par
+(\par
+ProgramID\tab Number(7) CONSTRAINT Program_ProgramID_PK PRIMARY KEY, \par
+ProgramName\tab VarChar2(25) NOT NULL, \par
+ProgramDesc\tab VarChar2(100), \par
+Length\tab\tab Number(5) NOT NULL,\par
+SupplierID\tab Number(7) NOT NULL CONSTRAINT pro_supid_fk REFERENCES Supplier,\par
+RatingID\tab Number(7) NOT NULL CONSTRAINT pro_ratid_fk REFERENCES Rating, \par
+ChannelTypeID\tab Number(7) NOT NULL CONSTRAINT pro_chatyid_fk REFERENCES ChannelType \par
+);\par
+\par
+\par
+--CREATE ProgramChannel Table\par
+CREATE TABLE ProgramChannel\par
+(\par
+ProgramChannelID Number(7) CONSTRAINT prochan_prochanid_pk PRIMARY KEY,\par
+ChannelID\tab Number(7) NOT NULL CONSTRAINT prochan_chanid_fk REFERENCES Channel,\par
+ProgramID\tab Number(7) NOT NULL CONSTRAINT prochan_proid_fk REFERENCES Program,\par
+ShowDateTime\tab TIMESTAMP\par
+);\par
+\par
+\par
+--Step 2: Populate "INSERT" tables\par
+\par
+--employee table population\par
+\par
+INSERT INTO Employee\par
+VALUES (10100, 'James', 'Boyd', '21515 Hillside Lane', 'Los Angeles', 'CA', 90012);\par
+INSERT INTO Employee\par
+VALUES (10101, 'Sharon', 'Walters', '11399 Frontier Road', 'Los Angeles', 'CA', 90004);\par
+INSERT INTO Employee\par
+VALUES (10102, 'Jeremiah', 'King', '57132 Campsite Blvd', 'Los Angeles', 'CA', 90010);\par
+INSERT INTO Employee\par
+VALUES (10103, 'Sarah', 'Hanson', '3712 Burridge Drive', 'Burbank', 'CA', 91523);\par
+INSERT INTO Employee\par
+VALUES (10104, 'Alfred', 'Madison', '8849 River Road', 'Burbank', 'CA', 91507);\par
+INSERT INTO Employee\par
+VALUES (10105, 'Esther', 'Brown', '78125 Ingleside Blvd', 'Los Angeles', 'CA', 90030);\par
+\par
+--customer table population\par
+\par
+-- 1st customer Joon Winship\par
+\par
+insert into customer \par
+values (0001234, 'Joon', 'Winship', 5299594070, '640 Honeypot Dr.', 'Melbourne', 'Tx', 77022, \par
+\tab 'J.Winship@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'INACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10100);\par
+\tab\par
+-- 2nd customer Cuthbert Small\par
+\par
+insert into customer \par
+values (0004648, 'Cuthbert', 'Small', 5299595645, '774 Hangar St.', 'Melbourne', 'Tx', 77022, \par
+\tab 'C.Small@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'INACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10101);\par
+\tab\par
+-- 3rd customer Weston Martinsson\par
+\par
+insert into customer \par
+values (0000780, 'Weston', 'Martinsson', 5299597852, '1313 Ghoul Ct.', 'Melbourne', 'Tx', 77022, \par
+\tab 'W.Martinsson', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'INACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10102);\par
+\tab\par
+-- 4th customer Buz Vacik\par
+\par
+insert into customer \par
+values (0001480, 'Buz', 'Vacik', 5299595881, '1830 Serenity Way', 'Melbourne', 'Tx', 77022, \par
+\tab 'B.Vacik@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'ACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10103);\par
+\tab\par
+-- 5th customer Iah Simon\par
+\par
+insert into customer \par
+values (0005337, 'Iah', 'Simon', 5299590235, '4711 Delicacy Dr.', 'Melbourne', 'Tx', 77022, \par
+\tab 'I.Simon@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'INACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10104);\par
+\tab\par
+-- 6th customer Kai Zuniga\par
+\par
+insert into customer \par
+values (0005314, 'Kai', 'Zuniga', 5299599775, '1233 Border Rd.', 'Melbourne', 'Tx', 77022, \par
+\tab 'K.Zuniga@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'ACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10105);\par
+\tab\par
+-- 7th customer Evren Cleary\par
+\par
+insert into customer \par
+values (0002433, 'Evren', 'Cleary', 5299596878, '969 Battleground Pass', 'Melbourne', 'Tx', 77022, \par
+\tab 'E.Cleary@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'INACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10100);\par
+\tab\par
+-- 8th customer Eliakim Moles\par
+\par
+insert into customer \par
+values (0006223, 'Eliakim', 'Moles', 5299596115, '1949 Fierce Ave.', 'Melbourne', 'Tx', 77022, \par
+\tab 'E.Moles@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'ACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10101);\par
+\par
+-- 9th customer Ambroz Watkins\par
+\par
+insert into customer \par
+values (0004258, 'Ambroz', 'Watkins', 5299593773, '9916 Destiny Cir.', 'Melbourne', 'Tx', 77022, \par
+\tab 'A.Watkins@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'ACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10102);\par
+\tab\par
+-- 10th customer Avgustin Holme \par
+\par
+insert into customer \par
+values (0009505, 'Avgustin', 'Holme', 5299592145, '336 Breakwater Pass', 'Melbourne', 'Tx', 77022, \par
+\tab 'A.Holme@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'ACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10103);\par
+\tab\par
+-- 11th customer Rigby Bodilsen\par
+\par
+insert into customer \par
+values (0000966, 'Rigby', 'Bodilsen', 5299595811, '455 Carriage Dr.', 'Melbourne', 'Tx', 77022, \par
+\tab 'R.Bodilsen@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'INACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10104);\par
+\tab\par
+-- 12th customer Uri Franke\par
+\par
+insert into customer \par
+values (0007768, 'Uri', 'Franke', 5299595408, '3945 Fairytale Dr.', 'Melbourne', 'Tx', 77022, \par
+\tab 'U.Franke@email.com', to_date('28Dec76', 'DD-Mon-YY'), to_date('31Oct15', 'DD-Mon-YY'), 'ACTIVE', \par
+\tab to_date('24Nov15', 'DD-Mon-YY'), 'blah', 10105);\par
+\par
+--billing table population\par
+\par
+INSERT INTO Billing\par
+VALUES (01,0001234,'31-OCT-15','01-NOV-15',50,'10-AUG-15',50);\par
+INSERT INTO Billing\par
+VALUES (02,0004648,'31-OCT-15','01-NOV-15',20,'19-AUG-15',10);\par
+INSERT INTO Billing\par
+VALUES (03,0000780,'31-OCT-15','01-NOV-15',100,'25-AUG-15',100);\par
+INSERT INTO Billing\par
+VALUES (04,0001480,'31-OCT-15','01-NOV-15',200,'26-AUG-15',50);\par
+INSERT INTO Billing\par
+VALUES (05,0005337,'31-OCT-15','01-NOV-15',198,'27-AUG-15',198);\par
+INSERT INTO Billing\par
+VALUES (06,0005314,'31-OCT-15','01-NOV-15',45,'28-AUG-15',45);\par
+INSERT INTO Billing\par
+VALUES (07,0002433,'31-OCT-15','01-NOV-15',60,'2-AUG-15',60);\par
+INSERT INTO Billing\par
+VALUES (08,0006223,'31-OCT-15','01-NOV-15',150,'6-AUG-15',150);\par
+INSERT INTO Billing\par
+VALUES (09,0004258,'31-OCT-15','01-NOV-15',400,'7-AUG-15',400);\par
+INSERT INTO Billing\par
+VALUES (10,0009505,'31-OCT-15','01-NOV-15',200,'9-AUG-15',200);\par
+INSERT INTO Billing\par
+VALUES (11,0000966,'31-OCT-15','01-NOV-15',150,'12-AUG-15',150);\par
+INSERT INTO Billing\par
+VALUES (12,0007768,'31-OCT-15','01-NOV-15',300,'15-AUG-15',300);\par
+\par
+--package table population\par
+\par
+INSERT INTO Package\par
+VALUES (1, 'Movies Galore', 30);\par
+INSERT INTO Package\par
+VALUES (2, 'News Globe', 30);\par
+INSERT INTO Package\par
+VALUES (3, 'Total Watcher', 40);\par
+INSERT INTO Package\par
+VALUES (4, 'Couch Potato', 50);\par
+\par
+--customerpackage table population\par
+\par
+INSERT INTO CustomerPackage\par
+VALUES (1, 0001234, '25-JAN-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (2, 0004648, '09-FEB-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (3, 0000780, '20-FEB-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (4, 0001480, '02-MAY-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (2, 0005337, '26-JUL-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (3, 0005314, '01-JUL-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (1, 0002433, '01-JAN-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (3, 0006223, '01-MAR-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (1, 0004258, '10-APR-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (4, 0009505, '12-AUG-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (2, 0000966, '19-AUG-2015');\par
+INSERT INTO CustomerPackage\par
+VALUES (3, 0007768, '2-JUL-2015');\par
+\par
+--supplier table population\par
+\par
+INSERT INTO Supplier\par
+VALUES (65937,'NBC', 'Jeff King', '10880 Wilshire Blvd #1200', 'Los Angeles', 'CA',45367, 3103685231);\par
+INSERT INTO Supplier\par
+VALUES (13245,'ABC', 'Jack Caverisi','5460 Wilshire Blvd','Los Angeles', 'CA', 45367, 3108409966);\par
+INSERT INTO Supplier\par
+VALUES (17642,'FOX', 'Janis Carmikel','10960 Wilshire Blvd', 'Los Angeles', 'CA', 45367, 3102355233);\par
+INSERT INTO Supplier\par
+VALUES (23961,'WARNER', 'Simon Philips','3701 W Oak St', 'Burbank', 'CA',45367, 3105326588);\par
+\par
+--rating table population\par
+\par
+INSERT INTO Rating\par
+VALUES (1, 'G', '(General Audiences) - All Ages');\par
+INSERT INTO Rating\par
+VALUES (2, 'PG', '(Parental Guidance Suggested) - Some Material May Not Be Suitable For Children');\par
+INSERT INTO Rating\par
+VALUES (3, 'PG-13', '(Parents Strongly Cautioned) - Some Material May Be Inappropriate For Children Under 13');\par
+INSERT INTO Rating\par
+VALUES (4, 'R', '(Restricted) - Under 17 Requires Accompanying Parent Or Adult Guardian');\par
+INSERT INTO Rating\par
+VALUES (5, 'NC-17', '(Adults Only) - No One 17 and Under Admitted');\par
+\par
+--channeltype table population\par
+\par
+INSERT INTO ChannelType\par
+VALUES (1,'Movie');\par
+INSERT INTO ChannelType\par
+VALUES (2,'Lifestyle');\par
+INSERT INTO ChannelType\par
+VALUES (3,'News');\par
+INSERT INTO ChannelType\par
+VALUES (4,'Sports');\par
+INSERT INTO ChannelType\par
+VALUES (5, 'Documentary');\par
+\par
+--channel table population\par
+\par
+--INSERT VALUES into Channel\par
+INSERT INTO Channel \par
+VALUES (1,'TBS',1,1);\par
+INSERT INTO Channel \par
+VALUES (2,'FOOD',2,2);\par
+INSERT INTO Channel \par
+VALUES (3,'CNN',3,3);\par
+INSERT INTO Channel \par
+VALUES (4,'ESPN',4,4);\par
+INSERT INTO Channel\par
+VALUES (5, 'Speed', 5, 4); \par
+INSERT INTO Channel\par
+VALUES (6, 'MTV', 6, 2);\par
+INSERT INTO Channel\par
+VALUES (7, 'HBO', 7, 1);\par
+INSERT INTO Channel\par
+VALUES (8, 'Lifetime', 8, 2);\par
+INSERT INTO Channel\par
+VALUES (9, 'FOX', 9, 3);\par
+INSERT INTO Channel\par
+VALUES (10, 'CNBC', 10, 3); \par
+\par
+--channelpackage population\par
+\par
+INSERT INTO ChannelPackage\par
+VALUES (1, 1);\par
+INSERT INTO ChannelPackage\par
+VALUES (2, 1);\par
+INSERT INTO ChannelPackage\par
+VALUES (3, 1);\par
+INSERT INTO ChannelPackage\par
+VALUES (6, 1);\par
+INSERT INTO ChannelPackage\par
+VALUES (7, 1);\par
+INSERT INTO ChannelPackage\par
+VALUES (9, 1);\par
+INSERT INTO ChannelPackage\par
+VALUES (1, 2);\par
+INSERT INTO ChannelPackage\par
+VALUES (3, 2);\par
+INSERT INTO ChannelPackage\par
+VALUES (4, 2);\par
+INSERT INTO ChannelPackage\par
+VALUES (6, 2);\par
+INSERT INTO ChannelPackage\par
+VALUES (7, 2);\par
+INSERT INTO ChannelPackage\par
+VALUES (9, 2);\par
+INSERT INTO ChannelPackage\par
+VALUES (1, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (2, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (3, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (6, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (7, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (8, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (9, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (10, 3);\par
+INSERT INTO ChannelPackage\par
+VALUES (1, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (2, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (3, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (4, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (5, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (6, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (7, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (8, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (9, 4);\par
+INSERT INTO ChannelPackage\par
+VALUES (10, 4);\par
+\par
+--customersurvey table population\par
+\par
+INSERT INTO CustomerSurvey\par
+VALUES (453, 0001234, '04-AUG-15', 1);\par
+INSERT INTO CustomerSurvey\par
+VALUES (657, 0004648, '07-NOV-13', 2);\par
+INSERT INTO CustomerSurvey\par
+VALUES (145, 000780, '20-OCT-14', 3);\par
+\par
+--program table population\par
+\par
+INSERT INTO PROGRAM\par
+VALUES(100, 'Sale of the Year', 'Game Show Lifestyle', 60, 65937, 1, 2);\par
+INSERT INTO PROGRAM\par
+VALUES(101, 'Opera by the Nile', 'Luciano Pavorotti sings opera on the Nile', 120, 17642, 1, 5);\par
+INSERT INTO PROGRAM\par
+VALUES(102, 'Fly Killers are Back', 'Flies attack the city once again, the Bygone Brigade are back', 60, 13245, 5, 1);\par
+INSERT INTO PROGRAM\par
+VALUES(103, 'NBC Tonight', 'News from around the world', 60, 65937, 2, 3);\par
+INSERT INTO PROGRAM\par
+VALUES(104, 'The Shopping Show', 'The sites to see when you shop online', 120, 17642, 1, 2);\par
+INSERT INTO PROGRAM\par
+VALUES(105, 'Angel Fire', 'Angel is back on the streets', 120, 65937, 5, 1);\par
+INSERT INTO PROGRAM\par
+VALUES(106, 'Lawn Bowl Championship', 'Live from Canberra', 120, 23961, 1, 4);\par
+INSERT INTO PROGRAM\par
+VALUES(107, 'Mud Wrestling', 'The mud pits come alive for the muddy challenge', 120, 17642, 1, 4);\par
+INSERT INTO PROGRAM\par
+VALUES (108, 'MLB Baseball', 'Astros versus Yankees', 60, 17642, 1, 4);\par
+INSERT INTO Program\par
+VALUES (109, 'Today Show', 'Morning show featuring news and interviews', 60, 65937, 1, 2);\par
+INSERT INTO Program\par
+VALUES (110, 'Extant', 'A female astronaut tries to reconnect with her family', 60, 17642, 3, 1);\par
+INSERT INTO Program\par
+VALUES (111, 'American Ninja Warrior', 'Athletes tackle an array of challenges', 60, 17642, 1, 4);\par
+INSERT INTO Program\par
+VALUES (112, 'Under the Dome', 'A small New England town is sealed off by a dome', 60, 65937, 2, 1);\par
+INSERT INTO Program\par
+VALUES (113, 'Golf', 'PGA Tournament', 60, 17642, 1, 4);\par
+INSERT INTO Program\par
+VALUES (114, 'Automotive Drag Racing', 'Car racing - 1/4 mile drag racing', 60, 17642, 1, 4);\par
+INSERT INTO Program\par
+VALUES (115, 'Cupcake Challenge', 'Teams compete to make cupcakes', 60, 13245, 1, 2);\par
+INSERT INTO Program\par
+VALUES (116, 'Fox News', 'Latest news around the globe', 60, 17642, 1, 3);\par
+INSERT INTO Program\par
+VALUES (117, 'The Last Ship', 'A deadly plague wipes out much of humanity', 60, 65937, 2, 1);\par
+INSERT INTO Program\par
+VALUES (118, 'CNBC News', 'Latest news for today', 60, 13245, 1, 3);\par
+INSERT INTO Program\par
+VALUES (119, 'The View', 'Chatfest with a womans perspective', 60, 13245, 1, 2);\par
+INSERT INTO Program\par
+VALUES (120, 'Dateline NBC', 'NBC News', 60, 65937, 1, 3);\par
+\par
+--programchannel population\par
+\par
+INSERT INTO ProgramChannel\par
+VALUES (1, 1, 100, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (2, 1, 101, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (3, 1, 102, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (4, 1, 103, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (5, 1, 104, TO_DATE('2015-08-15 01:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (6, 2, 105, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (7, 2, 106, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (8, 2, 107, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (9, 2, 108, TO_DATE('2015-08-15 02:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (10, 2, 109, TO_DATE('2015-08-15 03:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (11, 3, 110, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (12, 3, 111, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (13, 3, 112, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (14, 3, 113, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (15, 3, 114, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (16, 4, 115, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (17, 4, 116, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (18, 4, 117, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (19, 4, 118, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (20, 4, 119, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (21, 5, 120, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (22, 5, 100, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (23, 5, 101, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (24, 5, 102, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (25, 5, 103, TO_DATE('2015-08-15 01:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (26, 6, 104, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (27, 6, 105, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (28, 6, 106, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (29, 6, 107, TO_DATE('2015-08-15 02:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (30, 6, 108, TO_DATE('2015-08-15 04:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (31, 7, 109, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (32, 7, 110, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (33, 7, 111, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (34, 7, 112, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (35, 7, 113, TO_DATE('2015-08-15 12:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (36, 8, 114, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (37, 8, 115, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (38, 9, 116, TO_DATE('2015-08-15 08:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (39, 10, 117, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (40, 8, 118, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (41, 10, 119, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (42, 9, 120, TO_DATE('2015-08-15 09:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (43, 9, 100, TO_DATE('2015-08-15 10:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (44, 9, 101, TO_DATE('2015-08-15 11:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (45, 9, 102, TO_DATE('2015-08-15 01:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+INSERT INTO ProgramChannel\par
+VALUES (46, 10, 103, TO_DATE('2015-08-15 02:00:00', 'YYYY-MM-DD-HH24:MI:SS'));\par
+\par
+\par
+}
+ 
